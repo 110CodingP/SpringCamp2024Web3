@@ -10,10 +10,11 @@ class LibraryBook {
 };
 // A class for transaction
 class LibraryTransaction {
-    constructor(patron,book,date) {
+    constructor(patron,book,date,type) {
         this.Patron = patron;
         this.Book = book;
         this.Date = date;
+        this.Type= type; //true for issue and false for return
     }
 };
 
@@ -23,20 +24,21 @@ class Library {
         this.Books = books;
         this.Transactions=transactions;
     }
-    CheckOut = (title) => {
+    CheckOut = (book) => {
         let found=false;
         let idx=-1;
-        for (let i=0 ;i<length(this.Books);i++) {
-            if (this.Books[i].Title===title) {
+        for (let i=0 ;i<this.Books.length;i++) {
+            if (this.Books[i]===book) {
                 found=true;
                 idx=i;
             }
         }
         if (found) {
-            console.log(`Yes, ${title} is in the library catalogue`);
+            console.log(`Yes, ${book.Title} is in the library catalogue`);
             if (this.Books[idx].AvailableCopies>0) {
-                console.log(`${name}  has been issued to you`);
+                console.log(`${book.Title}  has been issued to you`);
                 this.Books[idx].AvailableCopies--;
+                return true;
             }
             else {
                 console.log(`Sorry, this book is currently unvailable`);
@@ -45,10 +47,11 @@ class Library {
         else {
             console.log('Sorry, we donot have this book in the library catalogue');
         }
+        return false;
     };
-    CheckIn = (title) => {
-        for (let i=0 ;i<length(this.Books);i++) {
-            if (this.Books[i].Title===title) {
+    CheckIn = (book) => {
+        for (let i=0 ;i<this.Books.length;i++) {
+            if (this.Books[i]===book) {
                 this.Books[i].AvailableCopies++;
                 console.log("Thank You! Have a nice day!");
                 break;
@@ -65,18 +68,23 @@ class LibraryPatron {
         this.CheckedOutBooks=checkedOut;
         this.LibraryBranch=branch;
     }
-    CheckedOutBook=(name)=> {
-        this.CheckedOutBooks.push(name);
-        this.LibraryBranch.CheckOut(name);
+    CheckedOutBook=(book)=> {
+        if (this.LibraryBranch.CheckOut(book)) {
+            this.CheckedOutBooks.push(book);
+            let transaction= new LibraryTransaction(this,book,123,true);
+            this.LibraryBranch.Transactions.push(transaction);
+        }
     }
-    ReturnBook=(name)=> {
+    ReturnBook=(book)=> {
         let idx=-1;
-        for (let i=0;i<length(this.CheckedOutBooks);i++) {
-            if (this.CheckedOutBooks[i]===name) {
+        for (let i=0;i<this.CheckedOutBooks.length;i++) {
+            if (this.CheckedOutBooks[i]==book) {
                 idx=i;
             }
         }
-        this.LibraryBranch.CheckIn(name);
+        let transaction = new LibraryTransaction(this,book,123,false);
+        this.LibraryBranch.transactions.push(transaction);
+        this.LibraryBranch.CheckIn(book);
     }
 };
 
@@ -95,11 +103,11 @@ class LibraryBranch extends Library {
 //Checking if its all right
 const book1 = new LibraryBook('xyz','abc',123,1,2);
 let books = [book1];
-const IITKLib = new LibraryBranch(book1,'IITK');
+const IITKLib = new LibraryBranch(books,'IITK');
 let john = new LibraryPatron(123,'John',IITKLib);
 IITKLib.AddPatron(john);
-
-
+john.CheckedOutBook(book1);
+console.log(IITKLib.Transactions);
 /*
 Attributes:
 Title (string): The book's title.
