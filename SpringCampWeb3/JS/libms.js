@@ -67,33 +67,53 @@ class LibraryPatron {
         this.Name=name;
         this.CheckedOutBooks=checkedOut;
         this.LibraryBranch=branch;
-    }
-    CheckedOutBook=(book)=> {
+    };
+    CheckedOutBook=(book,date)=> {
         if (this.LibraryBranch.CheckOut(book)) {
-            this.CheckedOutBooks.push(book);
-            let transaction= new LibraryTransaction(this,book,123,true);
+            this.CheckedOutBooks.push([book,date+1]);
+            let transaction= new LibraryTransaction(this,book,date,true);
             this.LibraryBranch.Transactions.push(transaction);
         }
-    }
-    ReturnBook=(book)=> {
+    };
+    ReturnBook=(book,date)=> {
         let idx=-1;
         for (let i=0;i<this.CheckedOutBooks.length;i++) {
-            if (this.CheckedOutBooks[i]==book) {
+            if (this.CheckedOutBooks[i][0]==book) {
                 idx=i;
             }
         }
-        let transaction = new LibraryTransaction(this,book,123,false);
-        this.LibraryBranch.transactions.push(transaction);
+        let transaction = new LibraryTransaction(this,book,date,false);
+        this.LibraryBranch.Transactions.push(transaction);
         this.LibraryBranch.CheckIn(book);
+        if (date>this.CheckedOutBooks[idx][1]) {
+            console.log(`Please pay a fine of ${(date-this.CheckedOutBooks[idx][1])*0.01} for returning the book late.`);
+        }
+    };
+    ReserveBook = (book) => {
+      let found=false;
+      for (let i=0;i<this.LibraryBranch.Reservations.length;i++) {
+        if (this.LibraryBranch.Reservations[i][1]==book) {
+            found=true;
+            break;
+        }
+      }
+      if (!found) {
+        this.LibraryBranch.Reservations.push([this,book]);
+        console.log("This book has been reserved for you.");
+      }
+      else {
+        console.log("Sorry, this book has already been reserved by someone else! Please come later.");
+      }
     }
 };
 
 // Extending Library to a branch
 class LibraryBranch extends Library {
-    constructor(books,name,patrons=[]) {
+    constructor(books,name,patrons=[],reservations=[]) {
         super(books);
         this.BranchName=name;
         this.Patrons=patrons;
+        this.Reservations=reservations;
     }
     AddPatron =(patron)=> {
         this.Patrons.push(patron);
@@ -101,14 +121,27 @@ class LibraryBranch extends Library {
 };
 //Due dates and reservation
 //Checking if its all right
-const book1 = new LibraryBook('xyz','abc',123,1,2);
+const book1 = new LibraryBook('xyz','abc',123,0,2);
 let books = [book1];
 const IITKLib = new LibraryBranch(books,'IITK');
 let john = new LibraryPatron(123,'John',IITKLib);
 IITKLib.AddPatron(john);
-john.CheckedOutBook(book1);
-console.log(IITKLib.Transactions);
+john.CheckedOutBook(book1,0);
+john.ReserveBook(book1);
+console.log(IITKLib.Reservations);
+// console.log(IITKLib.Transactions);
+//john.ReturnBook(book1,2);
+//console.log(IITKLib.Transactions);
+
+
+
+
+
+
+
+
 /*
+Problem
 Attributes:
 Title (string): The book's title.
 Author (string): The book's author.
