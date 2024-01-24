@@ -167,39 +167,3 @@ person1.ReserveBook(book1);
 
 
 
-
-
-/*
-Problem
-Attributes:
-Title (string): The book's title.
-Author (string): The book's author.
-Publication Year (int): The year the book was published.
-Available Copies (int): The number of available copies in the library.
-Total Copies (int): The total number of copies in the library.
-
-Methods:
-
-Check Out(): Decreases available copies by 1 when a book is checked out.
-Check In(): Increases available copies by 1 when a book is checked in.
-LibraryPatron Class :Create a LibraryPatron class with the following properties and actions:	
-Properties:
-Patron ID (int): A unique identifier for the library patron.
-Name (string): The name of the library patron.
-Checked Out Books (list): A list to store books checked out by the patron.
-Actions:
-Check Out Book(book): Adds a book to the checked-out list and calls the book's Check Out method.
-Return Book(book): Removes a book from the checked-out list and calls the book's Check In method.
-
-LibraryTransaction Class :Create a LibraryTransaction class to record transactions between patrons and books.
-Properties:
-Patron (LibraryPatron): The patron involved in the transaction.
-Book (LibraryBook): The book involved in the transaction.
-Transaction Date (date): The date of the transaction.
-
-Extended Features :Extend the system to include the following features:
-Due Dates: Implement due dates for checked-out books. Calculate and display overdue fines for late returns.
-LibraryBranch Class: Create a LibraryBranch class to support multiple branches. Each branch should have its collection of books and patrons.
-Reservation System: Implement a reservation system where patrons can reserve books that are currently checked out.
-
-*/
